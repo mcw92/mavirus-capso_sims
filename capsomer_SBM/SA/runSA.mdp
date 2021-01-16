@@ -1,0 +1,56 @@
+; Simulated-annealing capsomer run (SBM)
+;
+; Run control
+integrator  = sd        ;Langevin dynamics
+dt          = 0.0005    ;time step in reduced units
+nsteps      = 200000000 ;number of integration steps
+;
+; Output control
+; NOTE: trr files are used to continue runs. Unless you are interested in velocities, don't save data to .trr file too often.
+nstxout             = 20000000    ;frequency to write coordinates to output trajectory trr file
+nstvout             = 20000000    ;frequency to write velocities to output trajectory trr file
+nstlog              = 2000        ;frequency to write energies to log file
+nstenergy           = 2000        ;frequency to write energies to energy file
+nstxout-compressed  = 1000        ;frequency to write coordinates to xtc trajectory
+compressed-x-grps   = system      ;group(s) to write to xtc trajectory
+energygrps          = system      ;group(s) to write to energy file
+;
+; Neighbor searching
+nstlist         = 20        ;Frequency to update the neighbor list (and the long-range forces when using twin-range cut-off's).        
+cutoff-scheme   = verlet    ;Use verlet list. This is unique to Gromacs 5.
+ns-type         = grid      ;Make box grid, only check atoms in neighboring grid cells when constructing a new list.
+pbc             = xyz       ;3D periodic boundary conditions
+rlist           = 1.5       ;cut-off distance for the short-range neighbor list
+;
+; Electrostatics
+coulombtype     = Cut-off   ;Twin range cut-offs with neighborlist cut-off rlist and Coulomb cut-off rcoulomb, where rcoulomb≥rlist. 
+rcoulomb        = 1.5
+;
+; VdW
+vdwtype =   Cut-off ;Twin range cut-offs with neighbor list cut-off rlist and VdW cut-off rvdw, where rvdw ≥ rlist.
+rvdw    =   1.5
+;
+; Tables
+table-extension = 15 ; (nm) !IMPORTANT! Set this so that rvdw + table-extension equals half of the box's longest diagonal.
+;
+;Temperature coupling
+tc-grps = system
+tau-t   = 1.0       ; Temperature coupling time constant. Smaller values = stronger coupling.
+ref-t   = 90.0      ; In reduced units (see Gromacs Manual for explanation. We find many proteins fold around T=100-120)
+;
+;Simulated annealing
+;annealing         = single
+;annealing-npoints = 7
+;annealing-time    = 0 15000 30000 45000 60000 75000 90000
+;annealing-temp    = 90 85 80 75 70 65 60
+;
+;Pressure coupling
+Pcoupl  = no
+;
+;Velocity generation
+gen-vel     = yes
+gen-temp    = 90.0
+gen-seed    = 9
+ld-seed     = 9
+comm-mode   = angular ; center of mass velocity removal. Make sure you select what is proper for your simulation.
+;NOTE on comm_mode: When using periodic boundary conditions, which is required when using Verlet lists in Gromacs V 5, removing the angular velocity will lead to a warning at the grompp stage of simulations. So long as the box size is properly sized, such that your system does not cross the boundaries during the simulation, then this warning is harmless and you can simply issue -maxwarn N, where N is the number of allowed warning messages. 

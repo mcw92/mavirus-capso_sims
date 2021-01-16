@@ -1,0 +1,45 @@
+###############
+# R E A D M E #
+###############
+
+This repository contains a minimal dataset of input files required to reproduce the simulation results presented in the paper "The trimeric major capsid protein of Mavirus is stabilized by its interlocked N-termini enabling core flexibility for capsid assembly" by Christiansen et al., 2021, JMB.
+
+All simulations were performed using the MD engine GROMACS 5.
+MD simulations in GROMACS require a coordinate file of the system (.gro), a topology file of the system (.top), and a molecular dynamics parameter file (.mdp).
+A simulation can be run with the following commands:
+
+gmx grompp -c coord.gro -p topol.top -f run.mdp -o run.tpr
+gmx mdrun -deffnm run
+
+Two different types of simulations were performed.
+
+-------------------------------------------------------------------------------------
+- Structure-based MD simulations of trimeric capsomer (see directory capsomer_SBM/) -
+-------------------------------------------------------------------------------------
+
+The SBM was built from the capsomer .pdb structure 6g45.pdb.
+All runs used the same topology file 6g45.top.
+6g45.ndx is the system's index file required to analyze the clasp distances as described in the paper.
+.mdp files can be found in the respective subfolders.
+
+Capsomer simulations at constant temperature, starting from native state 6g45.gro: see directory capsomer_SBM/T_const/
+Capsomer simulation with simulated annealing, starting from structure with loose N-terminal arms initLoose.gro: see directory capsomer_SBM/SA/initLoose/
+Capsomer simulation with simulated annealing, starting from energy-minimized fully dissociated structure em.gro: see directory capsomer_SBM/SA/initDiss/
+
+------------------------------------------------------------------------------
+- Explicit-solvent MD simulations of MCP monomer (see directory monomer_MD/) -
+------------------------------------------------------------------------------
+
+All runs initiated from the MCP monomer structure 6g45_single.pdb (extracted as first chain of trimeric capsomer 6g45.pdb).
+As described in the paper, the structure was energy-minimzed (em.mdp) and neutralized (ions.mdp).
+Subsequently, the position-restrained structure was NVT- and NPT-equilibrated at each considered temperature (see directories T3??/ for respective .mdp and .gro files).
+
+To reproduce the actual MD simulations with GROMACS 5, execute the following commands:
+
+gmx grompp -f runT??.mdp -c npt.gro -t npt.cpt -p topol.top -o run
+gmx mdrun -v -deffnm run
+
+Monomer simulation at T = 300 K: see directory monomer_MD/T300/
+Monomer simulation at T = 314 K: see directory monomer_MD/T314/
+Monomer simulation at T = 325 K: see directory monomer_MD/T325/
+Monomer simulation at T = 335 K: see directory monomer_MD/T335/
